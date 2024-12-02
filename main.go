@@ -4,7 +4,13 @@ import "fmt"
 
 func main() {
 	fmt.Println("Hello, World!")
-	day1(`28186   35627
+	day1p2(`3   4
+4   3
+2   5
+1   3
+3   9
+3   3`)
+	day1p2(`28186   35627
 51854   34597
 19211   51032
 79370   53096

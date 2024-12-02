@@ -7,6 +7,28 @@ import (
 	"strings"
 )
 
+func getListsFromInput(lines []string, list1 *[]int, list2 *[]int) {
+	*list1 = make([]int, len(lines))
+	*list2 = make([]int, len(lines))
+
+	for i, line := range lines {
+		numsSplit := strings.Split(line, "   ")
+
+		num1, err1 := strconv.Atoi(numsSplit[0])
+		num2, err2 := strconv.Atoi(numsSplit[1])
+
+		if err1 != nil {
+			fmt.Println("Error in num1!")
+		}
+		if err2 != nil {
+			fmt.Println("Error in num2!")
+		}
+
+		(*list1)[i] = num1
+		(*list2)[i] = num2
+	}
+}
+
 func day1(input string) {
 	lines := strings.Split(input, "\n")
 
@@ -32,26 +54,32 @@ func getTotalListDifference(lines []string, list2 []int, list1 []int) int {
 	return total
 }
 
-func getListsFromInput(lines []string, list1 *[]int, list2 *[]int) {
-	*list1 = make([]int, len(lines))
-	*list2 = make([]int, len(lines))
+func day1p2(input string) {
+	lines := strings.Split(input, "\n")
 
-	for i, line := range lines {
-		numsSplit := strings.Split(line, "   ")
+	var list1 []int
+	var list2 []int
 
-		num1, err1 := strconv.Atoi(numsSplit[0])
-		num2, err2 := strconv.Atoi(numsSplit[1])
+	getListsFromInput(lines, &list1, &list2)
 
-		if err1 != nil {
-			fmt.Println("Error in num1!")
+	total := GetSimilarityTotal(list1, list2)
+
+	fmt.Println(total)
+}
+
+func GetSimilarityTotal(list1 []int, list2 []int) int {
+	total := 0
+
+	for _, item1 := range list1 {
+		count := 0
+		for _, item2 := range list2 {
+			if item1 == item2 {
+				count++
+			}
 		}
-		if err2 != nil {
-			fmt.Println("Error in num2!")
-		}
-
-		(*list1)[i] = num1
-		(*list2)[i] = num2
+		total += count * item1
 	}
+	return total
 }
 
 func abs(x int) int {
