@@ -7,6 +7,16 @@ import (
 	"unicode"
 )
 
+func checkValidInnerNumber(target string) bool {
+	for _, char := range target {
+		if !unicode.IsDigit(char) {
+			return false
+		}
+	}
+
+	return true
+}
+
 // Result: 164730528
 func day3(input string) {
 	total := 0
@@ -50,6 +60,7 @@ func day3(input string) {
 	fmt.Println(total)
 }
 
+// Output: 70478672
 func day3p2(input string) {
 	total := 0
 
@@ -109,14 +120,4 @@ func day3p2(input string) {
 	}
 
 	fmt.Println(total)
-}
-
-func checkValidInnerNumber(target string) bool {
-	for _, char := range target {
-		if !unicode.IsDigit(char) {
-			return false
-		}
-	}
-
-	return true
 }
