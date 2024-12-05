@@ -1,6 +1,9 @@
 package main
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 type puzzleInfo struct {
 	input      string
@@ -9,28 +12,92 @@ type puzzleInfo struct {
 }
 
 func day4(input string) {
-	firstLineLength := strings.Index(input, "\n") + 1
-	count := strings.Count(input, "\n")
+	firstLineLength := strings.Index(input, "\n")
+
+	newInput := strings.ReplaceAll(input, "\n", "")
 
 	info := puzzleInfo{
-		input:      input,
+		input:      newInput,
 		lineLength: firstLineLength,
-		length:     len(input),
+		length:     len(newInput),
 	}
 
-	for i := 0; i < count; i++ {
+	total := 0
 
+	for i := range info.input {
+		if recursiveCheckLetter(info, 'X', i, 0) {
+			total++
+		}
+		if recursiveCheckLetter(info, 'X', i, 1) {
+			total++
+		}
+		if recursiveCheckLetter(info, 'X', i, 2) {
+			total++
+		}
+		if recursiveCheckLetter(info, 'X', i, 3) {
+			total++
+		}
+		if recursiveCheckLetter(info, 'X', i, 4) {
+			total++
+		}
+		if recursiveCheckLetter(info, 'X', i, 5) {
+			total++
+		}
+		if recursiveCheckLetter(info, 'X', i, 6) {
+			total++
+		}
+		if recursiveCheckLetter(info, 'X', i, 7) {
+			total++
+		}
 	}
+
+	fmt.Println(total)
 }
 
 // Direction:
 // o - 1 - 2
 // 3 - X - 4
 // 5 - 6 - 7
-func recursiveCheckLetter(info puzzleInfo, targetLetter rune, currentIndex int, direction int) {
+func recursiveCheckLetter(info puzzleInfo, targetLetter byte, currentIndex int, direction int) bool {
+	if info.input[currentIndex] != targetLetter {
+		return false
+	}
+
+	nextLetter := getNextLetter(targetLetter)
+
+	if nextLetter == ' ' {
+		return false
+	}
+
+	if nextLetter == '.' {
+		return true
+	}
+
+	nextIndex := getNextTargetPosition(info, currentIndex, direction)
+
+	if nextIndex == -1 {
+		return false
+	}
+
+	return recursiveCheckLetter(info, nextLetter, nextIndex, direction)
 }
 
-func getNextTargetLetter(info puzzleInfo, currentIndex int, direction int) (int, bool) {
+func getNextLetter(currentLetter byte) byte {
+	switch currentLetter {
+	case 'X':
+		return 'M'
+	case 'M':
+		return 'A'
+	case 'A':
+		return 'S'
+	case 'S':
+		return '.'
+	}
+
+	return ' '
+}
+
+func getNextTargetPosition(info puzzleInfo, currentIndex int, direction int) int {
 	newIndex := -1
 
 	switch direction {
@@ -52,9 +119,7 @@ func getNextTargetLetter(info puzzleInfo, currentIndex int, direction int) (int,
 		newIndex = get7Dir(info, currentIndex)
 	}
 
-	isValid := newIndex != -1
-
-	return newIndex, isValid
+	return newIndex
 }
 
 func InTopEdge(currentIndex int, lineLength int) bool {
@@ -66,7 +131,7 @@ func InTopEdge(currentIndex int, lineLength int) bool {
 }
 
 func InLeftEdge(currentIndex int, lineLength int) bool {
-	if currentIndex%lineLength != 0 {
+	if currentIndex%lineLength == 0 {
 		return true
 	}
 
@@ -74,7 +139,7 @@ func InLeftEdge(currentIndex int, lineLength int) bool {
 }
 
 func InRightEdge(currentIndex int, lineLength int) bool {
-	if currentIndex%lineLength != lineLength-1 {
+	if currentIndex%lineLength == lineLength-1 {
 		return true
 	}
 
@@ -82,7 +147,7 @@ func InRightEdge(currentIndex int, lineLength int) bool {
 }
 
 func InBottomEdge(currentIndex int, lineLength int, totalLength int) bool {
-	if currentIndex > totalLength-lineLength {
+	if currentIndex > totalLength-lineLength-1 {
 		return true
 	}
 
