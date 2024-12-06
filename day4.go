@@ -25,28 +25,28 @@ func day4(input string) {
 	total := 0
 
 	for i := range info.input {
-		if recursiveCheckLetter(info, 'X', i, 0) {
+		if recursiveCheckLetter(info, 'X', i, 0, getNextLetterP1) {
 			total++
 		}
-		if recursiveCheckLetter(info, 'X', i, 1) {
+		if recursiveCheckLetter(info, 'X', i, 1, getNextLetterP1) {
 			total++
 		}
-		if recursiveCheckLetter(info, 'X', i, 2) {
+		if recursiveCheckLetter(info, 'X', i, 2, getNextLetterP1) {
 			total++
 		}
-		if recursiveCheckLetter(info, 'X', i, 3) {
+		if recursiveCheckLetter(info, 'X', i, 3, getNextLetterP1) {
 			total++
 		}
-		if recursiveCheckLetter(info, 'X', i, 4) {
+		if recursiveCheckLetter(info, 'X', i, 4, getNextLetterP1) {
 			total++
 		}
-		if recursiveCheckLetter(info, 'X', i, 5) {
+		if recursiveCheckLetter(info, 'X', i, 5, getNextLetterP1) {
 			total++
 		}
-		if recursiveCheckLetter(info, 'X', i, 6) {
+		if recursiveCheckLetter(info, 'X', i, 6, getNextLetterP1) {
 			total++
 		}
-		if recursiveCheckLetter(info, 'X', i, 7) {
+		if recursiveCheckLetter(info, 'X', i, 7, getNextLetterP1) {
 			total++
 		}
 	}
@@ -54,16 +54,102 @@ func day4(input string) {
 	fmt.Println(total)
 }
 
+func getNextLetterP1(currentLetter byte) byte {
+	switch currentLetter {
+	case 'X':
+		return 'M'
+	case 'M':
+		return 'A'
+	case 'A':
+		return 'S'
+	case 'S':
+		return '.'
+	}
+
+	return ' '
+}
+
+func day4p2(input string) {
+	firstLineLength := strings.Index(input, "\n")
+
+	newInput := strings.ReplaceAll(input, "\n", "")
+
+	info := puzzleInfo{
+		input:      newInput,
+		lineLength: firstLineLength,
+		length:     len(newInput),
+	}
+
+	total := 0
+
+	for i, char := range newInput {
+		if char != 'A' {
+			continue
+		}
+
+		amountCorrect := 0
+
+		topLeftIndex := getNextTargetPosition(info, i, 0)
+		if topLeftIndex == -1 {
+			continue
+		}
+		bottomRightIndex := getNextTargetPosition(info, i, 7)
+		if bottomRightIndex == -1 {
+			continue
+		}
+
+		topRightIndex := getNextTargetPosition(info, i, 2)
+		if topRightIndex == -1 {
+			continue
+		}
+		bottomLeftIndex := getNextTargetPosition(info, i, 5)
+		if bottomLeftIndex == -1 {
+			continue
+		}
+
+		if recursiveCheckLetter(info, 'M', topLeftIndex, 7, getNextLetterP2) {
+			amountCorrect++
+		} else if recursiveCheckLetter(info, 'M', bottomRightIndex, 0, getNextLetterP2) {
+			amountCorrect++
+		}
+
+		if recursiveCheckLetter(info, 'M', topRightIndex, 5, getNextLetterP2) {
+			amountCorrect++
+		} else if recursiveCheckLetter(info, 'M', bottomLeftIndex, 2, getNextLetterP2) {
+			amountCorrect++
+		}
+
+		if amountCorrect == 2 {
+			total++
+		}
+	}
+
+	fmt.Println(total)
+}
+
+func getNextLetterP2(currentLetter byte) byte {
+	switch currentLetter {
+	case 'M':
+		return 'A'
+	case 'A':
+		return 'S'
+	case 'S':
+		return '.'
+	}
+
+	return ' '
+}
+
 // Direction:
 // o - 1 - 2
 // 3 - X - 4
 // 5 - 6 - 7
-func recursiveCheckLetter(info puzzleInfo, targetLetter byte, currentIndex int, direction int) bool {
+func recursiveCheckLetter(info puzzleInfo, targetLetter byte, currentIndex int, direction int, getLetterFunc func(byte) byte) bool {
 	if info.input[currentIndex] != targetLetter {
 		return false
 	}
 
-	nextLetter := getNextLetter(targetLetter)
+	nextLetter := getLetterFunc(targetLetter)
 
 	if nextLetter == ' ' {
 		return false
@@ -79,22 +165,7 @@ func recursiveCheckLetter(info puzzleInfo, targetLetter byte, currentIndex int, 
 		return false
 	}
 
-	return recursiveCheckLetter(info, nextLetter, nextIndex, direction)
-}
-
-func getNextLetter(currentLetter byte) byte {
-	switch currentLetter {
-	case 'X':
-		return 'M'
-	case 'M':
-		return 'A'
-	case 'A':
-		return 'S'
-	case 'S':
-		return '.'
-	}
-
-	return ' '
+	return recursiveCheckLetter(info, nextLetter, nextIndex, direction, getLetterFunc)
 }
 
 func getNextTargetPosition(info puzzleInfo, currentIndex int, direction int) int {
